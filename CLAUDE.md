@@ -31,4 +31,6 @@ modernem Touch“, Grafiken über Draw Things (lokale App, erzeugt in seiner lok
 
 ## Verlauf
 - 2026-11-18: v0.1 gebaut (Code-Grafik), Prompt-Liste für Draw Things geschrieben. Repo theossel-sys/kraterlaeufer
-  vom User anzulegen; danach Bilder aus der lokalen Session einbauen.
+  angelegt, gepusht. 12 Bilder aus der lokalen Session (Commit f764dad) werden automatisch geladen; im Spiel geprüft
+  (Gebirgsebenen kacheln nahtlos, Sprites sitzen auf dem Boden). Weil die Bilder in jeder Etappe gleich sind, bekommt
+  jede Etappe eine Farbstimmung (STAGES[].tint, multiply über Himmel+Gebirge; Schattenkrater dunkel).

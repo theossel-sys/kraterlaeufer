@@ -79,12 +79,12 @@ function flashOf(src) {
 
 // ---------------------------------------------------------------- Etappen
 const STAGES = [
-  { name: 'MARE IMBRIUM', ground: ['#8a86a8', '#5f5a80', '#3a3558'], hill: '#4a3f78', far: '#2c2456', skyTop: '#05030f', skyBot: '#2a1450', len: 3200 },
-  { name: 'KOPERNIKUS-EBENE', ground: ['#a08a7a', '#6e5a58', '#43343c'], hill: '#5a3f5c', far: '#3a2440', skyTop: '#07030c', skyBot: '#3c1838', len: 3600 },
-  { name: 'TYCHO-HOCHLAND', ground: ['#9aa0a8', '#646a7a', '#3a3e50'], hill: '#3f4a6e', far: '#232c4c', skyTop: '#03050f', skyBot: '#14284a', len: 3600, boss: true },
-  { name: 'SCHATTENKRATER', ground: ['#5a5476', '#3a3456', '#221e38'], hill: '#2a2248', far: '#171230', skyTop: '#020108', skyBot: '#120a26', len: 3800, dark: true },
-  { name: 'APENNIN-GRAT', ground: ['#b0a088', '#7a6a5e', '#4a3c3a'], hill: '#6a4a52', far: '#3e2a3e', skyTop: '#080308', skyBot: '#46203a', len: 4000 },
-  { name: 'MARE NUBIUM', ground: ['#8c94aa', '#5c6280', '#363a58'], hill: '#3c4478', far: '#232a52', skyTop: '#03040f', skyBot: '#1c2456', len: 4200, boss: true },
+  { name: 'MARE IMBRIUM', tint: null, ground: ['#8a86a8', '#5f5a80', '#3a3558'], hill: '#4a3f78', far: '#2c2456', skyTop: '#05030f', skyBot: '#2a1450', len: 3200 },
+  { name: 'KOPERNIKUS-EBENE', tint: ['#e0a07a', 0.35], ground: ['#a08a7a', '#6e5a58', '#43343c'], hill: '#5a3f5c', far: '#3a2440', skyTop: '#07030c', skyBot: '#3c1838', len: 3600 },
+  { name: 'TYCHO-HOCHLAND', tint: ['#8fb0e8', 0.3], ground: ['#9aa0a8', '#646a7a', '#3a3e50'], hill: '#3f4a6e', far: '#232c4c', skyTop: '#03050f', skyBot: '#14284a', len: 3600, boss: true },
+  { name: 'SCHATTENKRATER', tint: ['#3a2c5c', 0.62], ground: ['#5a5476', '#3a3456', '#221e38'], hill: '#2a2248', far: '#171230', skyTop: '#020108', skyBot: '#120a26', len: 3800, dark: true },
+  { name: 'APENNIN-GRAT', tint: ['#e08a8a', 0.32], ground: ['#b0a088', '#7a6a5e', '#4a3c3a'], hill: '#6a4a52', far: '#3e2a3e', skyTop: '#080308', skyBot: '#46203a', len: 4000 },
+  { name: 'MARE NUBIUM', tint: ['#8aa8f0', 0.28], ground: ['#8c94aa', '#5c6280', '#363a58'], hill: '#3c4478', far: '#232a52', skyTop: '#03040f', skyBot: '#1c2456', len: 4200, boss: true },
 ];
 const GROUND = 140;                     // Grundhöhe des Bodens (Bildschirm-y)
 function groundAt(wx) {                // Bodenprofil ohne Krater
@@ -430,6 +430,12 @@ function draw() {
   // Parallax-Gebirge
   layer(ART.bg_far, 0.15, GROUND - 14 - (ART.bg_far ? ART.bg_far.height : 0), () => mountains(0.15, GROUND - 22, 46, st.far, 11));
   layer(ART.bg_near, 0.4, GROUND + 6 - (ART.bg_near ? ART.bg_near.height : 0), () => mountains(0.4, GROUND - 4, 26, st.hill, 23));
+  // Farbstimmung der Etappe über Himmel und Gebirge (die Bilder sind in allen Etappen gleich)
+  if (st.tint) {
+    ctx.globalCompositeOperation = 'multiply'; ctx.globalAlpha = st.tint[1];
+    ctx.fillStyle = st.tint[0]; ctx.fillRect(0, 0, W, GROUND + 8);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  }
   // Boden
   drawGround(st);
   // Hindernisse
