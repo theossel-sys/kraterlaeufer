@@ -1,0 +1,17 @@
+{
+  "game": "Kraterläufer",
+  "images": {
+    "buggy":      { "size": [48, 30], "mode": "pixel", "note": "Spieler-Rover, Seitenansicht nach rechts" },
+    "drone":      { "size": [22, 12], "mode": "pixel", "note": "kleine Drohne (wirft Bomben)" },
+    "bomber":     { "size": [36, 16], "mode": "pixel", "note": "Bomber (fliegt quer, drei Bomben)" },
+    "crawler":    { "size": [20, 12], "mode": "pixel", "note": "Kriecher am Boden" },
+    "rock_small": { "size": [14, 11], "mode": "pixel", "note": "kleiner Fels (1 Treffer)" },
+    "rock_big":   { "size": [20, 17], "mode": "pixel", "note": "großer Fels (3 Treffer)" },
+    "mine":       { "size": [10, 7], "mode": "pixel", "note": "Mine (nur überspringen)" },
+    "walker":     { "size": [86, 90], "mode": "pixel", "note": "Endgegner Kampfläufer" },
+    "bg_far":     { "size": [640, 90], "mode": "pixel", "tile_x": true, "note": "ferne Bergkette (scrollt langsam, nahtlos)" },
+    "bg_near":    { "size": [640, 56], "mode": "pixel", "tile_x": true, "note": "nahe Hügel (scrollt schneller, nahtlos)" },
+    "bg_sky":     { "size": [480, 225], "mode": "smooth", "keep_background": true, "note": "Sternenhimmel mit Erde" },
+    "title":      { "size": [1600, 900], "mode": "smooth", "keep_background": true, "note": "Titelbild quer" }
+  }
+}
