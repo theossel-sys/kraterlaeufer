@@ -59,6 +59,10 @@
     .btn { padding: 10px 14px; min-width: 170px; font-size: 11px; }
     .help { font-size: 7px; line-height: 1.8; }
   }
+  /* große unsichtbare Trefferflächen um die Touch-Knöpfe */
+  #pad button::after, #bombBtn::after, #pauseBtn::after { content: ''; position: absolute; inset: -16px; border-radius: 50%; }
+  #pauseBtn::after { border-radius: 8px; inset: -10px; }
+  html, body, canvas, #wrap { touch-action: none; -webkit-tap-highlight-color: transparent; }
 </style>
 </head>
 <body>
