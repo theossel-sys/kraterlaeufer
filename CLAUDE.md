@@ -34,3 +34,4 @@ modernem Touch“, Grafiken über Draw Things (lokale App, erzeugt in seiner lok
   angelegt, gepusht. 12 Bilder aus der lokalen Session (Commit f764dad) werden automatisch geladen; im Spiel geprüft
   (Gebirgsebenen kacheln nahtlos, Sprites sitzen auf dem Boden). Weil die Bilder in jeder Etappe gleich sind, bekommt
   jede Etappe eine Farbstimmung (STAGES[].tint, multiply über Himmel+Gebirge; Schattenkrater dunkel).
+- Feedback „am Anfang etwas zu schwer“: sanfter Einstieg ease() (0→1 über Etappe 1, ab Etappe 2/Runde 2 immer 1): erst nur schmale Krater + kleine Felsen, größere Abstände, große Felsen/Minen ab 25 %, Kriecher/Doppel ab 50 %, erste Luftwelle nach 12 s, seltener und max. 2 Drohnen, keine Bomben-Krater in Etappe 1. Bot-Messung (8 Läufe): erster Tod Ø 28 → 42 s, Tode in Etappe 1 Ø 1,1 → 0,4.

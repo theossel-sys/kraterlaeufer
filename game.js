@@ -100,7 +100,7 @@ function newGame() {
   G = {
     t: 0, stage: 0, loop: 0, dist: 0, cam: 0, speed: 70, score: 0, lives: 3, nextLife: 20000,
     p: { wx: 0, y: 0, vy: 0, air: false, jumpHold: 0, cool: 0, dead: 0, inv: 2, tilt: 0, sx: BX },
-    craters: [], obs: [], foes: [], shots: [], bombs: [], fx: [], spawnX: 260, waveT: 4, boss: null, bossDone: -1,
+    craters: [], obs: [], foes: [], shots: [], bombs: [], fx: [], spawnX: 300, waveT: 12, boss: null, bossDone: -1,
     banner: null, shake: 0, flash: 0, stageT: 0, clear: 0,
   };
   G.p.y = groundAt(0);
@@ -127,9 +127,13 @@ function spawnAhead() {
   while (G.spawnX < ahead) {
     const x = G.spawnX, lv = level();
     if (x > stageEnd - 120) { G.spawnX = Math.max(G.spawnX, stageEnd + 200); break; }
-    const k = rnd();
-    let gap = rr(110, 190) / Math.min(1.6, lv);
-    if (k < 0.32) { const w = ri(22, 40 + Math.min(10, G.loop * 4)); G.craters.push({ x, w, d: 26 }); gap += w; }
+    const e = ease(x);
+    // am Anfang nur Krater und kleine Felsen, dann nach und nach alles
+    let k = rnd();
+    if (e < 0.25) k = k < 0.6 ? k * 0.53 : 0.32 + (k - 0.6) * 0.45;      // nur Krater (bis 0.32) und kleine Felsen
+    else if (e < 0.5 && k >= 0.74) k = rnd() * 0.74;                      // noch keine Kriecher und Doppel-Hindernisse
+    let gap = rr(110, 190) / Math.min(1.6, lv) * (1.7 - 0.7 * e);
+    if (k < 0.32) { const w = e < 0.4 ? ri(18, 28) : ri(22, 40 + Math.min(10, G.loop * 4)); G.craters.push({ x, w, d: 26 }); gap += w; }
     else if (k < 0.5) G.obs.push({ type: 'rock_small', x, hp: 1 });
     else if (k < 0.63) { G.obs.push({ type: 'rock_big', x, hp: 3 }); gap += 10; }
     else if (k < 0.74) G.obs.push({ type: 'mine', x, hp: 999 });
@@ -141,12 +145,15 @@ function spawnAhead() {
   G.craters = G.craters.filter(c => c.x + c.w > G.cam - 40);
   G.obs = G.obs.filter(o => o.x > G.cam - 40 && !o.dead);
 }
+// sanfter Einstieg: 0 am Anfang, 1 ab Ende der ersten Etappe (und immer ab Runde 2)
+const ease = x => (G.loop > 0 || G.stage > 0) ? 1 : clamp((x || G.p.wx) / STAGES[0].len, 0, 1);
 function stageStart() { let s = 0; for (let i = 0; i < G.stage; i++) s += STAGES[i % STAGES.length].len; return s; }
 
 function spawnWave() {
   const lv = level(), n = Math.min(5, 2 + Math.floor(rnd() * lv * 1.6));
   if (rnd() < 0.7) {
-    for (let i = 0; i < n; i++) G.foes.push({ type: 'drone', air: true, x: W + 20 + i * 26, y: rr(32, 72), baseY: 0, t: rr(0, 6), hp: 1, flash: 0, cool: rr(0.8, 2.2), life: rr(7, 10), side: 1 });
+    const nn = ease() < 0.5 ? Math.min(n, 2) : n;
+    for (let i = 0; i < nn; i++) G.foes.push({ type: 'drone', air: true, x: W + 20 + i * 26, y: rr(32, 72), baseY: 0, t: rr(0, 6), hp: 1, flash: 0, cool: rr(0.8, 2.2), life: rr(7, 10), side: 1 });
   } else G.foes.push({ type: 'bomber', air: true, x: -40, y: rr(24, 40), t: 0, hp: 3, flash: 0, drops: 3, cool: 0.8, vx: 90 });
 }
 function startBoss() {
@@ -280,7 +287,7 @@ function update(dt) {
     if (Math.abs(sx - p.sx) < 12 + sz && p.y > top + 3) die(o.type === 'mine' ? 'MINE' : 'FELS');
   });
   // Gegner
-  if (!G.boss && !G.clear) { G.waveT -= dt; if (G.waveT <= 0) { spawnWave(); G.waveT = rr(4.5, 8) / level(); } }
+  if (!G.boss && !G.clear) { G.waveT -= dt; if (G.waveT <= 0) { spawnWave(); G.waveT = rr(4.5, 8) / level() * (1.6 - 0.6 * ease()); } }
   G.foes.forEach(f => {
     f.t += dt; f.flash = Math.max(0, (f.flash || 0) - dt);
     if (f.type === 'drone') {
@@ -289,7 +296,7 @@ function update(dt) {
       f.x += clamp(tx - f.x, -90, 90) * dt * 1.2;
       f.y = clamp(f.y + Math.sin(f.t * 2.2) * 26 * dt, 26, 82);
       f.cool -= dt * level();
-      if (f.cool <= 0 && f.x > 20 && f.x < W - 20 && !p.dead) { f.cool = rr(1.6, 2.8); G.bombs.push({ x: f.x, y: f.y + 6, vx: -G.speed * 0.2, vy: 30 }); AUDIO.sfx('drop'); }
+      if (f.cool <= 0 && f.x > 20 && f.x < W - 20 && !p.dead) { f.cool = rr(1.6, 2.8) * (1.5 - 0.5 * ease()); G.bombs.push({ x: f.x, y: f.y + 6, vx: -G.speed * 0.2, vy: 30 }); AUDIO.sfx('drop'); }
     } else if (f.type === 'bomber') {
       f.x += f.vx * dt;
       f.cool -= dt;
@@ -319,7 +326,7 @@ function update(dt) {
     if (!p.dead && p.inv <= 0 && Math.abs(b.x - p.sx) < 10 && Math.abs(b.y - (p.y - 9)) < 8) { b.gone = true; die('BOMBE'); }
     if (b.y >= groundY(wx)) {
       b.gone = true; boom(b.x, b.y, b.big ? 12 : 8, '#ffb13c'); AUDIO.sfx('boom');
-      if (wx > p.wx + 95 && !inPit(wx) && !G.obs.some(o => Math.abs(o.x - wx) < 30)) G.craters.push({ x: wx - (b.big ? 13 : 10), w: b.big ? 26 : 20, d: 18 });
+      if (ease() >= 1 && wx > p.wx + 95 && !inPit(wx) && !G.obs.some(o => Math.abs(o.x - wx) < 30)) G.craters.push({ x: wx - (b.big ? 13 : 10), w: b.big ? 26 : 20, d: 18 });
     }
     // abschießen
     G.shots.forEach(s => { if (s.up && !s.gone && Math.abs(s.x - b.x) < 6 && Math.abs(s.y - b.y) < 8) { s.gone = true; b.gone = true; boom(b.x, b.y, 5, '#ffd23f'); addScore(30); } });
